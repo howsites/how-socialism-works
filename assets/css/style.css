@@ -1,3 +1,19 @@
+/* ---------- Self-hosted fonts ---------- */
+@font-face {
+  font-family: "Mi Negra";
+  src: url("../fonts/mi-negra-regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mi Negra";
+  src: url("../fonts/mi-negra-black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ---------- Tokens ---------- */
 :root {
   --bg: #faf7f2;
@@ -13,6 +29,7 @@
   --radius: 16px;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --serif: "Fraunces", Georgia, serif;
+  --display: "Mi Negra", "Fraunces", Georgia, serif;
   --sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
@@ -40,9 +57,9 @@ body {
   font: 400 1.0625rem/1.65 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3 { font-family: var(--serif); line-height: 1.1; margin: 0 0 .5em; }
+h1, h2, h3 { font-family: var(--display); font-weight: 900; line-height: 1.1; margin: 0 0 .5em; }
 h2 { font-size: clamp(2rem, 5vw, 3.25rem); }
-h3 { font-size: 1.35rem; }
+h3 { font-size: 1.35rem; font-weight: 400; }
 p { margin: 0 0 1em; }
 a { color: inherit; }
 kbd {
@@ -92,7 +109,7 @@ kbd {
   transition: border-color .3s;
 }
 .nav.is-scrolled { border-color: var(--line); }
-.nav__brand { font: 700 1.05rem var(--serif); text-decoration: none; }
+.nav__brand { font: 900 1.05rem var(--display); text-decoration: none; }
 .nav__links { display: flex; gap: 20px; }
 .nav__links a { text-decoration: none; font-size: .9rem; color: var(--muted); transition: color .2s; }
 .nav__links a:hover, .nav__links a.is-active { color: var(--accent); }
@@ -108,7 +125,7 @@ kbd {
     radial-gradient(circle at 80% 70%, var(--accent-soft), transparent 40%);
 }
 .hero__title { font-size: clamp(3rem, 11vw, 7.5rem); letter-spacing: -.02em; }
-.hero__title em { color: var(--accent); font-style: italic; }
+.hero__title em { color: var(--accent); font-style: normal; }
 .hero__lede { max-width: 52ch; margin: 0 auto 3rem; font-size: 1.2rem; color: var(--muted); }
 .scroll-cue {
   justify-self: center; width: 28px; height: 46px;
@@ -147,7 +164,7 @@ kbd {
 .card__num {
   display: inline-grid; place-items: center; width: 40px; height: 40px; margin-bottom: 16px;
   border-radius: 50%; background: var(--accent-soft); color: var(--accent);
-  font: 700 1.1rem var(--serif);
+  font: 900 1.1rem var(--display);
 }
 .card p { color: var(--muted); margin: 0; }
 
@@ -194,7 +211,7 @@ kbd {
   content: ""; position: absolute; left: 64px; top: 28px; width: 14px; height: 14px;
   border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--dark-bg);
 }
-.timeline time { font: 700 1.1rem var(--serif); color: var(--accent); padding-top: 2px; }
+.timeline time { font: 900 1.1rem var(--display); color: var(--accent); padding-top: 2px; }
 .timeline p { margin: 0; }
 
 /* ---------- Split debate ---------- */
@@ -244,7 +261,7 @@ kbd {
 .tf__text:focus { border-color: var(--accent); }
 .tf__feedback { min-height: 1.6em; margin-top: 12px; color: var(--muted); font-size: .95rem; }
 .tf__result { text-align: center; animation: tf-in .6s var(--ease); margin: auto 0; }
-.tf__result .score { font: 700 4rem/1 var(--serif); color: var(--accent); }
+.tf__result .score { font: 900 4rem/1 var(--display); color: var(--accent); }
 .tf__nav { display: flex; justify-content: space-between; margin-top: auto; padding-top: 24px; }
 .btn {
   font: 600 1rem var(--sans); padding: 12px 22px; border-radius: 10px; cursor: pointer;
@@ -264,3 +281,240 @@ kbd {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- Logo (hero title) ---------- */
+:root { --logo-red: #e53a2f; }
+.hero {
+  background: var(--logo-red);
+  color: #fff;
+}
+.hero .eyebrow { color: #fff; opacity: .85; }
+.hero .hero__lede { color: rgb(255 255 255 / .9); }
+.hero .scroll-cue { border-color: #fff; }
+.hero .scroll-cue span { background: #fff; }
+
+.logo {
+  --shadow: .045em .05em 0 #000;
+  position: relative;
+  display: inline-block;
+  justify-self: center;
+  margin: 0 0 .5em;
+  padding: .65em 0 0 2.07em;           /* room for the arrow */
+  font: 900 min(7rem, 7.9vw)/1 var(--display);
+  letter-spacing: -.005em;
+  color: #fff;
+  white-space: nowrap;
+}
+.logo__text { text-shadow: var(--shadow); }
+.logo__u { position: relative; display: inline-block; }
+.logo__u::after {                       /* rounded underline under "Socialism" */
+  content: "";
+  position: absolute;
+  left: -.12em; right: -.02em; bottom: -.14em;
+  height: .1em;
+  border-radius: 1em;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.logo__arrow {
+  position: absolute;
+  left: 0; top: .205em;
+  width: 3.48em; height: 1.19em;
+  overflow: visible;
+}
+.logo__arrow path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.logo__arrow polygon { fill: #000; stroke: #000; stroke-width: 3; stroke-linejoin: round; }
+
+/* Draw the arrow in once the logo appears */
+@media (prefers-reduced-motion: no-preference) {
+  .logo__arrow path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .logo__arrow polygon { opacity: 0; transform-box: fill-box; transform-origin: left center; transform: scale(.3); }
+  .logo.is-visible .logo__arrow path { animation: draw 1.1s .5s var(--ease) forwards; }
+  .logo.is-visible .logo__arrow polygon { animation: pop .35s 1.5s var(--ease) forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pop { to { opacity: 1; transform: none; } }
+}
+
+/* Arrow variant switch: <h1 class="logo" data-arrow="1a|2a"> */
+.logo[data-arrow="1a"] .logo__arrow--2a,
+.logo[data-arrow="2a"] .logo__arrow--1a { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  /* 2a: the open ">" head draws on after the line */
+  .logo.is-visible .logo__arrow .head { animation: draw .3s 1.5s var(--ease) forwards; }
+}
+
+/* Arrow 2b sits over the lettering, so it's positioned against the text itself */
+.logo:not([data-arrow="2b"]) .logo__arrow--2b { display: none; }
+.logo[data-arrow="2b"] .logo__arrow--1a,
+.logo[data-arrow="2b"] .logo__arrow--2a { display: none; }
+.logo[data-arrow="2b"] { padding: 1.15em 0 0 .55em; }
+.logo__text { position: relative; display: inline-block; }
+.logo .logo__arrow--2b {
+  left: -.6em; top: -1em;
+  width: 6.4em; height: 1.9em;
+}
+.logo .logo__arrow--2b path { stroke-width: 9; }
+
+/* ".com" hidden for now — delete this rule to show it again */
+.logo__tld { display: none; }
+
+/* 1a / 2a: center the lettering itself; the arrow hangs off to its left */
+.logo:not([data-arrow="2b"]) { padding-left: 0; }
+.logo:not([data-arrow="2b"]) .logo__arrow { left: -2.07em; }
+
+/* ---------- Option icons (mid-century clip-art style) ---------- */
+.opt-icon {
+  width: 2.6em; height: 2.6em; flex: none; margin: -.3em 0;
+  --gap: var(--card);   /* colour of the white cut-in details */
+  transition: transform .35s var(--ease), color .2s;
+}
+.opt-icon--down { transform: scaleY(-1); }               /* thumbs down = flipped thumbs up */
+.tf label:hover .opt-icon,
+.tf label:has(input:checked) .opt-icon { color: var(--accent); transform: rotate(-12deg) scale(1.12); }
+.tf label:hover .opt-icon--down,
+.tf label:has(input:checked) .opt-icon--down { transform: scaleY(-1) rotate(12deg) scale(1.12); }
+
+/* ---------- Opening poll: just the answers in a rounded frame ---------- */
+.tf--poll {
+  min-height: 0;
+  border-radius: 28px;
+  padding: clamp(16px, 3vw, 24px);
+}
+.tf--poll .tf__feedback:empty { display: none; }
+.tf--poll .tf__feedback { margin: 4px 4px 0; }
+.tf--poll .tf__nav { padding: 16px 0 4px; }
+.tf--poll:not(.is-answered) .tf__nav { display: none; }   /* Continue appears after answering */
+.tf--poll label:last-of-type { margin-bottom: 0; }
+
+/* ---------- Title with a red icon badge ---------- */
+.title-with-icon { display: flex; align-items: center; gap: clamp(14px, 2.5vw, 24px); margin-bottom: 1.25rem; }
+.title-with-icon h2 { margin: 0; }
+.icon-badge {
+  flex: none;
+  display: grid; place-items: center;
+  width: clamp(60px, 9vw, 92px); aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--logo-red);
+  color: #000;          /* icon solid parts */
+  --gap: #fff;          /* icon cut-in details */
+}
+.icon-badge svg { width: 72%; height: 72%; }
+
+/* Wide screens: hang the badge in the left margin so the title lines up with
+   the centered text column (like the logo's arrow) */
+@media (min-width: 1000px) {
+  .title-with-icon { display: block; position: relative; }
+  .title-with-icon .icon-badge {
+    position: absolute;
+    right: calc(100% + 24px);
+    top: 50%;
+    translate: 0 -50%;
+  }
+}
+
+/* ---------- Case study: illustrated story steps ---------- */
+.tale {
+  list-style: none; padding: 0; margin: 2.5rem 0 0;
+  display: grid; gap: 20px;
+  grid-template-columns: 1fr;
+  counter-reset: tale;
+}
+.tale__item {
+  position: relative;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 24px;
+  counter-increment: tale;
+}
+.tale__item::after {                       /* step number in the corner */
+  content: counter(tale);
+  position: absolute; top: 18px; right: 22px;
+  font: 900 2rem/1 var(--display); color: var(--line);
+}
+.tale__item h3 { margin: .2em 0 .35em; }
+.tale__item p { margin: 0; color: var(--muted); }
+.tale__item .tale__when {
+  margin-top: 14px; color: var(--accent);
+  font: 600 .75rem var(--sans); letter-spacing: .12em; text-transform: uppercase;
+}
+.icon-badge--sm { width: 64px; }
+.tale__lesson {
+  margin-top: 28px; padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--radius);
+  background: var(--logo-red); color: #fff;
+}
+.tale__lesson h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+.tale__lesson p { max-width: 70ch; }
+.tale__lesson .tale__note { margin: 0; font-size: .85rem; opacity: .85; }
+.tale__lesson a { color: #fff; }
+@media (min-width: 640px) { .tale { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px) { .tale { grid-template-columns: repeat(3, 1fr); } }
+
+/* ---------- Hero layout + title swap on scroll ---------- */
+.hero { display: block; place-content: normal; padding: 0; }
+.hero__pin {
+  min-height: calc(100svh - 53px);
+  display: grid; place-content: center; text-align: center;
+  padding: 40px 16px;
+}
+/* Row 1: logo (+ arrow). Row 2: "It Doesn't Work." sits underneath, invisible at first. */
+.logo__text--flipped { display: block; margin-top: .35em; }
+.logo__text, .logo__arrow { transition: opacity .5s var(--ease), transform .5s var(--ease), visibility .5s; }
+.logo__text--flipped { opacity: 0; visibility: hidden; transform: translateY(.3em); }
+.logo.is-flipped .logo__text:not(.logo__text--flipped),
+.logo.is-flipped .logo__arrow { opacity: 0; visibility: hidden; transform: translateY(-.3em); }
+.logo.is-flipped .logo__text--flipped { opacity: 1; visibility: visible; transform: none; }
+
+/* ---------- Burger questions (sequential, auto-advancing) ---------- */
+.tf--seq { min-height: 0; border-radius: 28px; }
+.tf--seq [data-next] { display: none; }              /* picking an answer moves on by itself */
+.tf--seq .tf__nav { padding-top: 12px; }
+.tf--seq .tf__result { text-align: left; margin: 0; }
+.tf__summary { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+.tf__summary li {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.tf__summary strong { color: var(--accent); text-align: right; }
+.tally__q { margin-bottom: 1.25rem; }
+.tally__q p { margin: 0 0 .4rem; font-weight: 600; }
+.tally__row { display: grid; grid-template-columns: minmax(0, 14rem) 1fr 3rem; gap: 10px; align-items: center; font-size: .9rem; }
+.tally__bar { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.tally__bar i { display: block; height: 100%; background: var(--accent); transition: width .8s var(--ease); }
+.tally__row b { text-align: right; }
+.tf__summary span strong { color: inherit; }
+
+/* The HTML `hidden` attribute always wins over display rules like `.tf__nav { display: flex }` */
+[hidden] { display: none !important; }
+
+/* ---------- Featured $777 burger ---------- */
+.feature-burger {
+  display: grid; gap: 8px 32px; align-items: center;
+  margin: 1.5rem 0 2rem;
+  padding: clamp(20px, 4vw, 32px);
+  background: var(--card); border: 1px solid var(--line); border-radius: 28px;
+}
+@media (min-width: 700px) { .feature-burger { grid-template-columns: 5fr 6fr; } }
+.feature-burger__art { margin: 0; }
+.feature-burger__art svg { display: block; width: 100%; height: auto; }
+.feature-burger__place {
+  margin: 0 0 .3rem; color: var(--accent);
+  font: 600 .75rem var(--sans); letter-spacing: .14em; text-transform: uppercase;
+}
+.feature-burger h3 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: .3em; }
+.feature-burger ul { margin: 0 0 1rem; padding-left: 1.2em; }
+.feature-burger li { margin-bottom: .2em; }
+.feature-burger li::marker { color: var(--accent); }
+.feature-burger blockquote {
+  margin: 0; padding: 12px 16px;
+  border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 10px 10px 0;
+  font: italic 400 1.15rem/1.4 var(--serif);
+}
+.feature-burger cite { display: block; margin-top: 4px; font: 600 .8rem var(--sans); font-style: normal; color: var(--muted); }
+.feature-burger cite::before { content: "— "; }
+.feature-burger__ask { font: 900 clamp(1.4rem, 3vw, 1.8rem) var(--display); margin: 0 0 -.5rem; }

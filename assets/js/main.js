@@ -24,6 +24,22 @@
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  /* ---------- Hero title: once you scroll, the top row fades out and
+     "It Doesn't Work." fades in underneath; back at the top it reverses ---------- */
+  const logo = document.querySelector(".logo");
+  const hero = document.querySelector(".hero");
+  if (logo && hero) {
+    const labels = [logo.getAttribute("aria-label"), logo.dataset.flipLabel];
+    const update = () => {
+      const flipped = scrollY > hero.offsetHeight * 0.12;
+      if (flipped === logo.classList.contains("is-flipped")) return;
+      logo.classList.toggle("is-flipped", flipped);
+      logo.setAttribute("aria-label", labels[flipped ? 1 : 0]);
+    };
+    addEventListener("scroll", update, { passive: true });
+    update();
+  }
+
   /* ---------- Highlight the current section in the nav ---------- */
   const links = [...document.querySelectorAll(".nav__links a")];
   const sectionSpy = new IntersectionObserver((entries) => {
@@ -62,7 +78,8 @@
     const next = form.querySelector("[data-next]");
     const feedback = form.querySelector(".tf__feedback");
     const result = form.querySelector(".tf__result");
-    const isQuiz = form.dataset.mode === "quiz";
+    const isPoll = form.dataset.mode === "poll"; // single opinion question, no score
+    const isQuiz = form.dataset.mode === "quiz" || isPoll;
     let i = 0;
     let score = 0;
     let checked = false; // quiz: has the current answer been graded yet?
@@ -78,7 +95,7 @@
       qs[i].classList.remove("is-current");
       i = n;
       qs[i].classList.add("is-current");
-      bar.style.width = `${(i / qs.length) * 100}%`;
+      if (bar) bar.style.width = `${(i / qs.length) * 100}%`;
       prev.disabled = i === 0 || isQuiz;
       next.textContent = i === qs.length - 1 && !isQuiz ? "Submit" : "OK ✓";
       checked = false;
@@ -90,6 +107,14 @@
       const q = qs[i];
       const v = value(q);
       if (!v) { feedback.textContent = "Pick an answer first."; return false; }
+      if (!q.dataset.answer) {
+        // Opinion question: lock in the choice without marking right/wrong.
+        q.querySelectorAll("input").forEach((inp) => (inp.disabled = true));
+        feedback.textContent = q.dataset.explain || "";
+        next.textContent = i === qs.length - 1 ? "See results" : "Next →";
+        checked = true;
+        return true;
+      }
       const correct = v === q.dataset.answer;
       if (correct) score++;
       q.querySelectorAll("label").forEach((l) => {
@@ -106,19 +131,67 @@
 
     function finish() {
       qs[i].classList.remove("is-current");
-      bar.style.width = "100%";
+      if (bar) bar.style.width = "100%";
       form.querySelector(".tf__nav").hidden = true;
       if (feedback) feedback.textContent = "";
       result.hidden = false;
       if (isQuiz) {
-        result.innerHTML = `<div class="score">${score}/${qs.length}</div>
-          <p>${score === qs.length ? "Perfect score!" : "Scroll back up to review anything you missed."}</p>
+        const total = qs.filter((q) => q.dataset.answer).length;
+        result.innerHTML = `<div class="score">${score}/${total}</div>
+          <p>${score === total ? "Perfect score!" : "Scroll back up to review anything you missed."}</p>
           <button type="button" class="btn" data-restart>Try again</button>`;
         result.querySelector("[data-restart]").onclick = restart;
+      } else if (form.dataset.record) {
+        showSummary();
       } else {
         submitSurvey();
         result.innerHTML = `<div class="score">Thanks!</div><p>Your response has been recorded.</p>`;
       }
+    }
+
+    // Visible text of an answer option, without its A/B/C key
+    const optionText = (label) => {
+      const c = label.cloneNode(true);
+      c.querySelector(".key")?.remove();
+      return c.textContent.trim();
+    };
+
+    // Answer summary for recorded question sets (e.g. the burger questions)
+    function showSummary() {
+      const answers = {};
+      const rows = qs.map((q) => {
+        const input = q.querySelector("input:checked");
+        answers[input.name] = input.value;
+        const prompt = q.querySelector("legend").cloneNode(true);
+        prompt.querySelector(".tf__n")?.remove();
+        const choice = optionText(input.closest("label"));
+        return `<li><span>${prompt.innerHTML.trim()}</span><strong>${choice}</strong></li>`;
+      });
+      result.innerHTML = `<h3>Your answers</h3><ul class="tf__summary">${rows.join("")}</ul>
+        <div class="tf__tally" aria-live="polite"></div>
+        <button type="button" class="btn btn--ghost" data-restart>Change my answers</button>`;
+      result.querySelector("[data-restart]").onclick = restart;
+      window.Responses?.record(form.dataset.record, answers)
+        .then((tally) => renderTally(result.querySelector(".tf__tally"), tally))
+        .catch(() => {});
+    }
+
+    // "How everyone answered" bars, once a responses backend returns totals
+    function renderTally(el, tally) {
+      if (!tally) return;
+      el.innerHTML = "<h3>How everyone answered</h3>" + qs.map((q) => {
+        const name = q.querySelector("input").name;
+        const counts = tally[name] || {};
+        const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+        const prompt = q.querySelector("legend").cloneNode(true);
+        prompt.querySelector(".tf__n")?.remove();
+        const bars = [...q.querySelectorAll("label")].map((l) => {
+          const v = l.querySelector("input").value;
+          const pct = Math.round(((counts[v] || 0) / total) * 100);
+          return `<div class="tally__row"><span>${optionText(l)}</span><div class="tally__bar"><i style="width:${pct}%"></i></div><b>${pct}%</b></div>`;
+        }).join("");
+        return `<div class="tally__q"><p>${prompt.innerHTML.trim()}</p>${bars}</div>`;
+      }).join("");
     }
 
     function submitSurvey() {
@@ -139,7 +212,17 @@
     }
 
     function advance() {
-      if (isQuiz && !checked) { grade(); return; }
+      if (isQuiz && !checked) {
+        if (grade() && isPoll) {
+          next.textContent = "Continue ↓";
+          form.classList.add("is-answered");
+        }
+        return;
+      }
+      if (isPoll) {
+        form.closest("section")?.nextElementSibling?.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
       if (!isQuiz && !value(qs[i]) && qs[i].querySelector("input[type=radio]")) return;
       if (i < qs.length - 1) show(i + 1);
       else finish();
